@@ -1,7 +1,7 @@
 const router = require("express").Router();
 
 // model
-const Todo = require("../models/Todo");
+const List = require("../models/List");
 
 /*
 GET LIST: /api/todo
@@ -16,10 +16,10 @@ router.get("/", async (req, res) => {
   console.log("GET LIST", req.query);
 
   try {
-    const todos = await Todo.find();
+    const lists = await List.find();
     res.status(200).json({
-      data: todos,
-      msg: "Get todo success",
+      data: lists,
+      msg: "Get list success",
       isSuccess: true,
     });
   } catch (err) {
@@ -36,11 +36,11 @@ router.get("/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
-    const todo = await Todo.findById(id);
+    const list = await List.findById(id);
 
     // return success
     res.status(200).json({
-      data: todo,
+      data: list,
       msg: "Get item success",
       isSuccess: true,
     });
@@ -57,19 +57,17 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
   // req = request body -> client send
   // res = response body -> server return
-  const todoItem = new Todo({
+  const todoItem = new List({
     title: req.body.title,
-    description: req.body.description,
-    member: req.body.member,
-    status: "new",
+    cards: req.body.cards,
   });
 
   try {
-    const todo = await todoItem.save();
+    const list = await todoItem.save();
 
     // return success
     res.status(200).json({
-      data: todo,
+      data: list,
       msg: "Create todo success",
       isSuccess: true,
     });
@@ -88,12 +86,10 @@ router.put("/:id", async (req, res) => {
 
   const field = {};
   if (req.body.title) field.title = req.body.title;
-  if (req.body.description) field.description = req.body.description;
-  if (req.body.member) field.member = req.body.member;
-  if (req.body.status) field.status = req.body.status;
+  if (req.body.cards) field.cards = req.body.cards;
 
   try {
-    const item = await Todo.findOneAndUpdate(
+    const item = await List.findOneAndUpdate(
       { _id: id },
       { $set: field },
       { new: true }
@@ -123,7 +119,7 @@ router.delete("/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
-    const item = await Todo.findOneAndRemove({ _id: id });
+    const item = await List.findOneAndRemove({ _id: id });
     if (!item) {
       res.status(404).json({
         msg: "Item not found",
